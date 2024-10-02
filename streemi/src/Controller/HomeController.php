@@ -18,7 +18,7 @@ class HomeController extends AbstractController
 
     public function abonnement()
     {
-        return $this->render('others/abonnement.html.twig');
+        return $this->render('others/abonnements.html.twig');
     }
 
     #[Route(path: '/default', name: 'default')]
