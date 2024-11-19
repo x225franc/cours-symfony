@@ -4,9 +4,9 @@ namespace App\Enum;
 
 enum CommentStatusEnum: string
 {
-    const VALID = 'valid';
-    const PENDING = 'pending';
-    const APPROVED = 'approved';
-    const REJECTED = 'rejected';
-    const DELETED = 'deleted';
+    case VALID = 'valid';
+    case PENDING = 'pending';
+    case APPROVED = 'approved';
+    case REJECTED = 'rejected';
+    case DELETED = 'deleted';
 }

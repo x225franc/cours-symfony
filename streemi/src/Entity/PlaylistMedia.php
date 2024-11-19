@@ -17,11 +17,14 @@ class PlaylistMedia
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $addedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'MediaPlaylist')]
-    private ?Playlist $Playlist = null;
-
     #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Media $Media = null;
+
+    #[ORM\ManyToOne(inversedBy: 'mediaPlaylists')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Playlist $Playlist = null;  // Changed from $Playlist to $playlist
+
 
     public function getId(): ?int
     {
@@ -45,10 +48,9 @@ class PlaylistMedia
         return $this->Playlist;
     }
 
-    public function setPlaylist(?Playlist $Playlist): static
+    public function setPlaylist(?Playlist $playlist): self
     {
-        $this->Playlist = $Playlist;
-
+        $this->Playlist = $playlist;
         return $this;
     }
 
@@ -57,9 +59,9 @@ class PlaylistMedia
         return $this->Media;
     }
 
-    public function setMedia(?Media $Media): static
+    public function setMedia(?Media $media): static
     {
-        $this->Media = $Media;
+        $this->Media = $media;
 
         return $this;
     }

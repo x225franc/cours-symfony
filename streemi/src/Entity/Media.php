@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enum\MediaTypeEnum;
 use App\Repository\MediaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,8 +16,6 @@ class Media
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(enumType: MediaTypeEnum::class)]
-    private ?MediaTypeEnum $mediaType = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -74,8 +71,8 @@ class Media
     /**
      * @var Collection<int, PlaylistMedia>
      */
-    #[ORM\OneToMany(targetEntity: PlaylistMedia::class, mappedBy: 'media')]
-private Collection $playlistMedia;
+    #[ORM\OneToMany(mappedBy: 'media', targetEntity: PlaylistMedia::class)]
+    private Collection $playlistMedia;
 
     /**
      * @var Collection<int, Cast>
@@ -97,18 +94,6 @@ private Collection $playlistMedia;
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getMediaType(): ?MediaTypeEnum
-    {
-        return $this->mediaType;
-    }
-
-    public function setMediaType(MediaTypeEnum $mediaType): static
-    {
-        $this->mediaType = $mediaType;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -207,7 +192,7 @@ private Collection $playlistMedia;
     {
         if (!$this->MediaPlaylist->contains($mediaPlaylist)) {
             $this->MediaPlaylist->add($mediaPlaylist);
-            $mediaPlaylist->addMedium($this);
+            $mediaPlaylist->addMedia($this);
         }
 
         return $this;
@@ -216,7 +201,7 @@ private Collection $playlistMedia;
     public function removeMediaPlaylist(Playlist $mediaPlaylist): static
     {
         if ($this->MediaPlaylist->removeElement($mediaPlaylist)) {
-            $mediaPlaylist->removeMedium($this);
+            $mediaPlaylist->removeMedia($this);
         }
 
         return $this;

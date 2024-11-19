@@ -32,8 +32,11 @@ class Comment
     private ?Media $Media = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]  // Changed from false to true
     private ?self $Comment = null;
+
+    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, self>

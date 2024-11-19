@@ -63,6 +63,9 @@ class User
     #[ORM\OneToMany(targetEntity: PlaylistSubscription::class, mappedBy: 'UserPlaylistSubscription')]
     private Collection $PlaylistSubscription;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Playlist::class)]
+    private Collection $playlists;
+
     public function __construct()
     {
         $this->SubscriptionHistory = new ArrayCollection();
@@ -70,6 +73,7 @@ class User
         $this->WatchHistory = new ArrayCollection();
         $this->Comment = new ArrayCollection();
         $this->PlaylistSubscription = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
     }
 
     public function getId(): ?int
