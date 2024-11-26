@@ -11,7 +11,7 @@ App\Entity\Media:
         shortDescription: '<text(100)>'
         longDescription: '<text(300)>'
         releaseDate: '<dateTimeBetween("-5 years", "now")>'
-        coverImage: '<imageUrl()>'
+        coverImage: 'https://dummyimage.com/600x400/000/fff'
         staff: '[]'
         casting: '[]'
 
@@ -41,6 +41,11 @@ App\Entity\Season:
 #         media: '@media_<numberBetween(1, 20)>'
 #         createdAt: '<dateTimeBetween("-1 year", "now")>'
 #         updatedAt: '<dateTimeBetween(@self->createdAt, "now")>'
+
+App\Entity\Category:
+    category_{1..5}:
+        name: '<word()>'
+        label: '<word()>'
 
 App\Entity\Episode:
     episode_{1..100}:

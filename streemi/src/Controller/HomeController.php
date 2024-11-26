@@ -2,16 +2,25 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Media;
+use App\Entity\Category;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
     #[Route(path: '/', name: 'home')]
-    public function home()
+    public function home(EntityManagerInterface $entityManager)
     {
-        return $this->render('others/index.html.twig');
+        $categories = $entityManager->getRepository(Category::class)->findAll();
+        $media = $entityManager->getRepository(Media::class)->findAll();
+
+        return $this->render('others/index.html.twig', [
+            'categories' => $categories,
+            'media' => $media,
+        ]);
     }
 
     #[Route(path: '/abonnement', name: 'abonnement')]

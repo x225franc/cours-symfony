@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Media;
+use App\Entity\Category;
+use App\Entity\PlaylistMedia;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MovieController extends AbstractController
 {
@@ -28,14 +32,24 @@ class MovieController extends AbstractController
     }
 
     #[Route(path: '/discover', name: 'discover')]
-    public function discover()
+    public function discover(EntityManagerInterface $entityManager)
     {
-        return $this->render('movie/discover.html.twig');
+        $categories = $entityManager->getRepository(Category::class)->findAll();
+        $media = $entityManager->getRepository(Media::class)->findAll();
+
+        return $this->render('movie/discover.html.twig', [
+            'categories' => $categories,
+            'media' => $media,
+        ]);
     }
 
     #[Route(path: '/lists', name: 'lists')]
-    public function lists()
+    public function lists(EntityManagerInterface $entityManager)
     {
-        return $this->render('movie/lists.html.twig');
+        $playlist_media = $entityManager->getRepository(PlaylistMedia::class)->findAll();
+
+        return $this->render('movie/lists.html.twig', [
+            'playlist_media' => $playlist_media,
+        ]);
     }
 }
