@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241102134823 extends AbstractMigration
+final class Version20241128115229 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -37,11 +37,11 @@ final class Version20241102134823 extends AbstractMigration
         $this->addSql('CREATE TABLE serie (id INT AUTO_INCREMENT NOT NULL, media_id INT DEFAULT NULL, UNIQUE INDEX UNIQ_AA3A9334EA9FDD75 (media_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE subscription (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, price INT NOT NULL, duration INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE subscription_history (id INT AUTO_INCREMENT NOT NULL, sub_history_id INT DEFAULT NULL, subscription_id INT DEFAULT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, INDEX IDX_54AF90D032CE179F (sub_history_id), INDEX IDX_54AF90D09A1887DC (subscription_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE `user` (id INT AUTO_INCREMENT NOT NULL, subscription_id INT NOT NULL, username VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, account_status VARCHAR(255) NOT NULL, INDEX IDX_8D93D6499A1887DC (subscription_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, username VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, account_status VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_IDENTIFIER_USERNAME (username), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE watch_history (id INT AUTO_INCREMENT NOT NULL, user_watch_history_id INT DEFAULT NULL, media_id INT DEFAULT NULL, last_watched DATETIME NOT NULL, number_of_view INT NOT NULL, INDEX IDX_DE44EFD830998911 (user_watch_history_id), INDEX IDX_DE44EFD8EA9FDD75 (media_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE cast_media ADD CONSTRAINT FK_F96CCC9A27B5E40F FOREIGN KEY (cast_id) REFERENCES `cast` (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE cast_media ADD CONSTRAINT FK_F96CCC9AEA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C5F0EBBFF FOREIGN KEY (user_comment_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526C5F0EBBFF FOREIGN KEY (user_comment_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526CEA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id)');
         $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_9474526CF8697D13 FOREIGN KEY (comment_id) REFERENCES comment (id)');
         $this->addSql('ALTER TABLE episode ADD CONSTRAINT FK_DDAA1CDA4EC001D1 FOREIGN KEY (season_id) REFERENCES season (id)');
@@ -50,17 +50,16 @@ final class Version20241102134823 extends AbstractMigration
         $this->addSql('ALTER TABLE media_language ADD CONSTRAINT FK_DBBA5F07EA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE media_language ADD CONSTRAINT FK_DBBA5F0782F1BAF4 FOREIGN KEY (language_id) REFERENCES language (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE movie ADD CONSTRAINT FK_1D5EF26FEA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id)');
-        $this->addSql('ALTER TABLE playlist ADD CONSTRAINT FK_D782112DA76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE playlist ADD CONSTRAINT FK_D782112DA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE playlist_media ADD CONSTRAINT FK_C930B84FEA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id)');
         $this->addSql('ALTER TABLE playlist_media ADD CONSTRAINT FK_C930B84F6BBD148 FOREIGN KEY (playlist_id) REFERENCES playlist (id)');
-        $this->addSql('ALTER TABLE playlist_subscription ADD CONSTRAINT FK_832940CAE749209 FOREIGN KEY (user_playlist_subscription_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE playlist_subscription ADD CONSTRAINT FK_832940CAE749209 FOREIGN KEY (user_playlist_subscription_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE playlist_subscription ADD CONSTRAINT FK_832940C6BBD148 FOREIGN KEY (playlist_id) REFERENCES playlist (id)');
         $this->addSql('ALTER TABLE season ADD CONSTRAINT FK_F0E45BA9D94388BD FOREIGN KEY (serie_id) REFERENCES serie (id)');
         $this->addSql('ALTER TABLE serie ADD CONSTRAINT FK_AA3A9334EA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id)');
-        $this->addSql('ALTER TABLE subscription_history ADD CONSTRAINT FK_54AF90D032CE179F FOREIGN KEY (sub_history_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE subscription_history ADD CONSTRAINT FK_54AF90D032CE179F FOREIGN KEY (sub_history_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE subscription_history ADD CONSTRAINT FK_54AF90D09A1887DC FOREIGN KEY (subscription_id) REFERENCES subscription (id)');
-        $this->addSql('ALTER TABLE `user` ADD CONSTRAINT FK_8D93D6499A1887DC FOREIGN KEY (subscription_id) REFERENCES subscription (id)');
-        $this->addSql('ALTER TABLE watch_history ADD CONSTRAINT FK_DE44EFD830998911 FOREIGN KEY (user_watch_history_id) REFERENCES `user` (id)');
+        $this->addSql('ALTER TABLE watch_history ADD CONSTRAINT FK_DE44EFD830998911 FOREIGN KEY (user_watch_history_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE watch_history ADD CONSTRAINT FK_DE44EFD8EA9FDD75 FOREIGN KEY (media_id) REFERENCES media (id)');
     }
 
@@ -87,7 +86,6 @@ final class Version20241102134823 extends AbstractMigration
         $this->addSql('ALTER TABLE serie DROP FOREIGN KEY FK_AA3A9334EA9FDD75');
         $this->addSql('ALTER TABLE subscription_history DROP FOREIGN KEY FK_54AF90D032CE179F');
         $this->addSql('ALTER TABLE subscription_history DROP FOREIGN KEY FK_54AF90D09A1887DC');
-        $this->addSql('ALTER TABLE `user` DROP FOREIGN KEY FK_8D93D6499A1887DC');
         $this->addSql('ALTER TABLE watch_history DROP FOREIGN KEY FK_DE44EFD830998911');
         $this->addSql('ALTER TABLE watch_history DROP FOREIGN KEY FK_DE44EFD8EA9FDD75');
         $this->addSql('DROP TABLE `cast`');
@@ -107,7 +105,7 @@ final class Version20241102134823 extends AbstractMigration
         $this->addSql('DROP TABLE serie');
         $this->addSql('DROP TABLE subscription');
         $this->addSql('DROP TABLE subscription_history');
-        $this->addSql('DROP TABLE `user`');
+        $this->addSql('DROP TABLE user');
         $this->addSql('DROP TABLE watch_history');
     }
 }
