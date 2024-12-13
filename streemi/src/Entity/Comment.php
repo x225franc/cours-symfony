@@ -20,33 +20,28 @@ class Comment
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
-    #[ORM\Column(enumType: CommentStatusEnum::class)]
-    private ?CommentStatusEnum $status = null;
-
-    #[ORM\ManyToOne(inversedBy: 'Comment')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $UserComment = null;
-
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Media $Media = null;
+    private ?User $publisher = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: true)]  // Changed from false to true
-    private ?self $Comment = null;
-
-    private ?\DateTimeImmutable $createdAt = null;
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'childComments')]
+    private ?self $parentComment = null;
 
     /**
      * @var Collection<int, self>
      */
-    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'Comment')]
-    private Collection $comments;
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parentComment')]
+    private Collection $childComments;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    private ?Media $media = null;
+
+    #[ORM\Column(enumType: CommentStatusEnum::class, options: ['default' => CommentStatusEnum::PENDING])]
+    private ?CommentStatusEnum $status = null;
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
+        $this->childComments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -66,6 +61,71 @@ class Comment
         return $this;
     }
 
+    public function getPublisher(): ?User
+    {
+        return $this->publisher;
+    }
+
+    public function setPublisher(?User $publisher): static
+    {
+        $this->publisher = $publisher;
+
+        return $this;
+    }
+
+    public function getParentComment(): ?self
+    {
+        return $this->parentComment;
+    }
+
+    public function setParentComment(?self $parentComment): static
+    {
+        $this->parentComment = $parentComment;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getChildComments(): Collection
+    {
+        return $this->childComments;
+    }
+
+    public function addChildComment(self $childComment): static
+    {
+        if (!$this->childComments->contains($childComment)) {
+            $this->childComments->add($childComment);
+            $childComment->setParentComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChildComment(self $childComment): static
+    {
+        if ($this->childComments->removeElement($childComment)) {
+            if ($childComment->getParentComment() === $this) {
+                $childComment->setParentComment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
+
+        return $this;
+    }
+
     public function getStatus(): ?CommentStatusEnum
     {
         return $this->status;
@@ -74,72 +134,6 @@ class Comment
     public function setStatus(CommentStatusEnum $status): static
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getUserComment(): ?User
-    {
-        return $this->UserComment;
-    }
-
-    public function setUserComment(?User $UserComment): static
-    {
-        $this->UserComment = $UserComment;
-
-        return $this;
-    }
-
-    public function getMedia(): ?Media
-    {
-        return $this->Media;
-    }
-
-    public function setMedia(?Media $Media): static
-    {
-        $this->Media = $Media;
-
-        return $this;
-    }
-
-    public function getComment(): ?self
-    {
-        return $this->Comment;
-    }
-
-    public function setComment(?self $Comment): static
-    {
-        $this->Comment = $Comment;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(self $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setComment($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(self $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getComment() === $this) {
-                $comment->setComment(null);
-            }
-        }
 
         return $this;
     }

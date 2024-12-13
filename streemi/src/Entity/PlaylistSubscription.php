@@ -17,11 +17,13 @@ class PlaylistSubscription
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $subscribedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'PlaylistSubscription')]
-    private ?User $UserPlaylistSubscription = null;
+    #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Playlist $playlist = null;
 
     #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
-    private ?Playlist $Playlist = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $subscriber = null;
 
     public function getId(): ?int
     {
@@ -40,26 +42,26 @@ class PlaylistSubscription
         return $this;
     }
 
-    public function getUserPlaylistSubscription(): ?User
+    public function getPlaylist(): ?Playlist
     {
-        return $this->UserPlaylistSubscription;
+        return $this->playlist;
     }
 
-    public function setUserPlaylistSubscription(?User $UserPlaylistSubscription): static
+    public function setPlaylist(?Playlist $playlist): static
     {
-        $this->UserPlaylistSubscription = $UserPlaylistSubscription;
+        $this->playlist = $playlist;
 
         return $this;
     }
 
-    public function getPlaylist(): ?Playlist
+    public function getSubscriber(): ?User
     {
-        return $this->Playlist;
+        return $this->subscriber;
     }
 
-    public function setPlaylist(?Playlist $Playlist): static
+    public function setSubscriber(?User $subscriber): static
     {
-        $this->Playlist = $Playlist;
+        $this->subscriber = $subscriber;
 
         return $this;
     }

@@ -4,9 +4,8 @@ namespace App\Enum;
 
 enum UserAccountStatusEnum: string
 {
-    case VALID = 'valid';
-    case PENDING = 'pending';
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
     case BLOCKED = 'blocked';
-    case BANNED = 'banned';
-    case DELETED = 'deleted';
+    CASE BANNED = 'banned';
 }

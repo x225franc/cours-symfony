@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\PlaylistRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: PlaylistRepository::class)]
 class Playlist
@@ -24,19 +25,27 @@ class Playlist
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    /**
+     * @var Collection<int, PlaylistSubscription>
+     */
+    #[ORM\OneToMany(targetEntity: PlaylistSubscription::class, mappedBy: 'playlist')]
+    private Collection $playlistSubscriptions;
+
     #[ORM\ManyToOne(inversedBy: 'playlists')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?User $creator = null;
 
-    private ?User $userPlaylist = null;
+    /**
+     * @var Collection<int, PlaylistMedia>
+     */
+    #[ORM\OneToMany(targetEntity: PlaylistMedia::class, mappedBy: 'playlist')]
+    private Collection $playlistMedias;
 
-    private ?Media $media = null;
-
-    #[ORM\OneToMany(mappedBy: 'playlist', targetEntity: PlaylistMedia::class)]
-    private Collection $mediaPlaylists;
-
-    #[ORM\OneToMany(mappedBy: 'playlist', targetEntity: PlaylistSubscription::class)]
-    private Collection $playlistSubscriptions;
+    public function __construct()
+    {
+        $this->playlistSubscriptions = new ArrayCollection();
+        $this->playlistMedias = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -51,32 +60,6 @@ class Playlist
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function addMedia(Media $media): static
-    {
-        $this->media = $media;
-
-        return $this;
-    }
-
-    public function getMedia(): ?Media
-    {
-        return $this->media;
-    }
-
-    public function setMedia(?Media $media): static
-    {
-        $this->media = $media;
-
-        return $this;
-    }
-
-    public function removeMedia(Media $media): static
-    {
-        $this->media = null;
 
         return $this;
     }
@@ -105,29 +88,89 @@ class Playlist
         return $this;
     }
 
-    public function getUser(): ?User
+    /**
+     * @return Collection<int, PlaylistSubscription>
+     */
+    public function getPlaylistSubscriptions(): Collection
     {
-        return $this->user;
+        return $this->playlistSubscriptions;
     }
 
-    public function setUser(?User $user): self
+    public function addPlaylistSubscription(PlaylistSubscription $playlistSubscription): static
     {
-        $this->user = $user;
+        if (!$this->playlistSubscriptions->contains($playlistSubscription)) {
+            $this->playlistSubscriptions->add($playlistSubscription);
+            $playlistSubscription->setPlaylist($this);
+        }
 
         return $this;
     }
 
-    public function getUserPlaylist(): ?User
-
+    public function removePlaylistSubscription(PlaylistSubscription $playlistSubscription): static
     {
+        if ($this->playlistSubscriptions->removeElement($playlistSubscription)) {
+            if ($playlistSubscription->getPlaylist() === $this) {
+                $playlistSubscription->setPlaylist(null);
+            }
+        }
 
-        return $this->userPlaylist;
+        return $this;
     }
 
-    public function setUserPlaylist(?User $user): self
-
+    public function getCreator(): ?User
     {
-        $this->userPlaylist = $user;
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): static
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlaylistMedia>
+     */
+    public function getPlaylistMedias(): Collection
+    {
+        return $this->playlistMedias;
+    }
+
+    /**
+     * @return Collection<int, PlaylistMedia>
+     */
+    public function getPlaylistMediasMovies(): Collection
+    {
+        return $this->playlistMedias->filter(fn (PlaylistMedia $playlistMedia) => $playlistMedia->getMedia() instanceof Movie);
+    }
+
+    /**
+     * @return Collection<int, PlaylistMedia>
+     */
+    public function getPlaylistMediasSeries(): Collection
+    {
+        return $this->playlistMedias->filter(fn (PlaylistMedia $playlistMedia) => $playlistMedia->getMedia() instanceof Serie);
+    }
+
+    public function addPlaylistMedium(PlaylistMedia $playlistMedium): static
+    {
+        if (!$this->playlistMedias->contains($playlistMedium)) {
+            $this->playlistMedias->add($playlistMedium);
+            $playlistMedium->setPlaylist($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylistMedium(PlaylistMedia $playlistMedium): static
+    {
+        if ($this->playlistMedias->removeElement($playlistMedium)) {
+            if ($playlistMedium->getPlaylist() === $this) {
+                $playlistMedium->setPlaylist(null);
+            }
+        }
+
         return $this;
     }
 }

@@ -8,56 +8,32 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
-class Serie
+class Serie extends Media
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Media $Media = null;
-
     /**
      * @var Collection<int, Season>
      */
     #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'serie')]
-    private Collection $Season;
+    private Collection $seasons;
 
     public function __construct()
     {
-        $this->Season = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getMedia(): ?Media
-    {
-        return $this->Media;
-    }
-
-    public function setMedia(?Media $Media): static
-    {
-        $this->Media = $Media;
-
-        return $this;
+        parent::__construct();
+        $this->seasons = new ArrayCollection();
     }
 
     /**
      * @return Collection<int, Season>
      */
-    public function getSeason(): Collection
+    public function getSeasons(): Collection
     {
-        return $this->Season;
+        return $this->seasons;
     }
 
     public function addSeason(Season $season): static
     {
-        if (!$this->Season->contains($season)) {
-            $this->Season->add($season);
+        if (!$this->seasons->contains($season)) {
+            $this->seasons->add($season);
             $season->setSerie($this);
         }
 
@@ -66,7 +42,7 @@ class Serie
 
     public function removeSeason(Season $season): static
     {
-        if ($this->Season->removeElement($season)) {
+        if ($this->seasons->removeElement($season)) {
             // set the owning side to null (unless already changed)
             if ($season->getSerie() === $this) {
                 $season->setSerie(null);

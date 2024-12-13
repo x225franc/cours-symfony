@@ -15,66 +15,68 @@ class WatchHistory
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $lastWatched = null;
+    private ?\DateTimeInterface $lastWatchedAt = null;
 
     #[ORM\Column]
-    private ?int $numberOfView = null;
+    private ?int $numberOfViews = null;
 
-    #[ORM\ManyToOne(inversedBy: 'WatchHistory')]
-    private ?User $userWatchHistory = null;
+    #[ORM\ManyToOne(inversedBy: 'media')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $viewer = null;
 
     #[ORM\ManyToOne(inversedBy: 'watchHistories')]
-    private ?Media $Media = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Media $media = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLastWatched(): ?\DateTimeInterface
+    public function getLastWatchedAt(): ?\DateTimeInterface
     {
-        return $this->lastWatched;
+        return $this->lastWatchedAt;
     }
 
-    public function setLastWatched(\DateTimeInterface $lastWatched): static
+    public function setLastWatchedAt(\DateTimeInterface $lastWatchedAt): static
     {
-        $this->lastWatched = $lastWatched;
+        $this->lastWatchedAt = $lastWatchedAt;
 
         return $this;
     }
 
-    public function getNumberOfView(): ?int
+    public function getNumberOfViews(): ?int
     {
-        return $this->numberOfView;
+        return $this->numberOfViews;
     }
 
-    public function setNumberOfView(int $numberOfView): static
+    public function setNumberOfViews(int $numberOfViews): static
     {
-        $this->numberOfView = $numberOfView;
+        $this->numberOfViews = $numberOfViews;
 
         return $this;
     }
 
-    public function getUserWatchHistory(): ?User
+    public function getViewer(): ?User
     {
-        return $this->userWatchHistory;
+        return $this->viewer;
     }
 
-    public function setUserWatchHistory(?User $userWatchHistory): static
+    public function setViewer(?User $viewer): static
     {
-        $this->userWatchHistory = $userWatchHistory;
+        $this->viewer = $viewer;
 
         return $this;
     }
 
     public function getMedia(): ?Media
     {
-        return $this->Media;
+        return $this->media;
     }
 
-    public function setMedia(?Media $Media): static
+    public function setMedia(?Media $media): static
     {
-        $this->Media = $Media;
+        $this->media = $media;
 
         return $this;
     }

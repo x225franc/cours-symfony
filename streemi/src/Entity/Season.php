@@ -18,18 +18,19 @@ class Season
     #[ORM\Column]
     private ?int $seasonNumber = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Season')]
+    #[ORM\ManyToOne(inversedBy: 'seasons')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Serie $serie = null;
 
     /**
      * @var Collection<int, Episode>
      */
     #[ORM\OneToMany(targetEntity: Episode::class, mappedBy: 'season')]
-    private Collection $Episode;
+    private Collection $episodes;
 
     public function __construct()
     {
-        $this->Episode = new ArrayCollection();
+        $this->episodes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,15 +65,15 @@ class Season
     /**
      * @return Collection<int, Episode>
      */
-    public function getEpisode(): Collection
+    public function getEpisodes(): Collection
     {
-        return $this->Episode;
+        return $this->episodes;
     }
 
     public function addEpisode(Episode $episode): static
     {
-        if (!$this->Episode->contains($episode)) {
-            $this->Episode->add($episode);
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes->add($episode);
             $episode->setSeason($this);
         }
 
@@ -81,7 +82,7 @@ class Season
 
     public function removeEpisode(Episode $episode): static
     {
-        if ($this->Episode->removeElement($episode)) {
+        if ($this->episodes->removeElement($episode)) {
             // set the owning side to null (unless already changed)
             if ($episode->getSeason() === $this) {
                 $episode->setSeason(null);
